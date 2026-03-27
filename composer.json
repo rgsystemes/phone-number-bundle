@@ -1,5 +1,5 @@
 {
-    "name": "misd/phone-number-bundle",
+    "name": "rgsystemes/phone-number-bundle",
     "type": "symfony-bundle",
     "abandoned": "odolbeau/phone-number-bundle",
     "description": "Integrates libphonenumber into your Symfony5 application",
