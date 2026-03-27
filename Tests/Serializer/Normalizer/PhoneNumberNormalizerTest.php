@@ -16,14 +16,14 @@ use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Misd\PhoneNumberBundle\Serializer\Normalizer\PhoneNumberNormalizer;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Phone number serialization test.
  */
 class PhoneNumberNormalizerTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists('Symfony\Component\Serializer\Serializer')) {
             $this->markTestSkipped('The Symfony Serializer is not available.');
@@ -83,11 +83,10 @@ class PhoneNumberNormalizerTest extends TestCase
         $this->assertSame($phoneNumber, $normalizer->denormalize('+33193166989', 'libphonenumber\PhoneNumber'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Serializer\Exception\UnexpectedValueException
-     */
     public function testInvalidDateThrowException()
     {
+        $this->expectException(\Symfony\Component\Serializer\Exception\UnexpectedValueException::class);
+
         $phoneNumberUtil = $this->getMockBuilder('libphonenumber\PhoneNumberUtil')
             ->disableOriginalConstructor()->getMock();
 

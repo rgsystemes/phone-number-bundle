@@ -15,6 +15,7 @@ use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Locale;
 use Misd\PhoneNumberBundle\Form\Type\PhoneNumberType;
+use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\Form\Test\TypeTestCase;
 use Symfony\Component\Intl\Util\IntlTestHelper;
 
@@ -23,7 +24,7 @@ use Symfony\Component\Intl\Util\IntlTestHelper;
  */
 class PhoneNumberTypeTest extends TypeTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         Locale::setDefault('en');
 
@@ -35,17 +36,13 @@ class PhoneNumberTypeTest extends TypeTestCase
      */
     public function testSingleField($input, $options, $output)
     {
-        if (method_exists('Symfony\\Component\\Form\\FormTypeInterface', 'getName')) {
-            $type = new PhoneNumberType();
-        } else {
-            $type = 'Misd\\PhoneNumberBundle\\Form\\Type\\PhoneNumberType';
-        }
+        $type = PhoneNumberType::class;
 
         $form = $this->factory->create($type, null, $options);
 
         $form->submit($input);
 
-        if(method_exists($form, 'getTransformationFailure') && $failure = $form->getTransformationFailure()) {
+        if ($failure = $form->getTransformationFailure()) {
             throw $failure;
         } else {
             $this->assertTrue($form->isSynchronized());
@@ -80,16 +77,12 @@ class PhoneNumberTypeTest extends TypeTestCase
     public function testCountryChoiceValues($input, $options, $output)
     {
         $options['widget'] = PhoneNumberType::WIDGET_COUNTRY_CHOICE;
-        if (method_exists('Symfony\\Component\\Form\\FormTypeInterface', 'getName')) {
-            $type = new PhoneNumberType();
-        } else {
-            $type = 'Misd\\PhoneNumberBundle\\Form\\Type\\PhoneNumberType';
-        }
+        $type = PhoneNumberType::class;
         $form = $this->factory->create($type, null, $options);
 
         $form->submit($input);
 
-        if(method_exists($form, 'getTransformationFailure') && $failure = $form->getTransformationFailure()) {
+        if ($failure = $form->getTransformationFailure()) {
             throw $failure;
         } else {
             $this->assertTrue($form->isSynchronized());
@@ -124,11 +117,7 @@ class PhoneNumberTypeTest extends TypeTestCase
     {
         IntlTestHelper::requireIntl($this);
 
-        if (method_exists('Symfony\\Component\\Form\\FormTypeInterface', 'getName')) {
-            $type = new PhoneNumberType();
-        } else {
-            $type = 'Misd\\PhoneNumberBundle\\Form\\Type\\PhoneNumberType';
-        }
+        $type = PhoneNumberType::class;
         $form = $this->factory->create($type, null, array('widget' => PhoneNumberType::WIDGET_COUNTRY_CHOICE, 'country_choices' => $choices));
 
         $view = $form->createView();
@@ -136,7 +125,7 @@ class PhoneNumberTypeTest extends TypeTestCase
 
         $this->assertCount($expectedChoicesCount, $choices);
         foreach ($expectedChoices as $expectedChoice) {
-            $this->assertContains($expectedChoice, $choices, '', false, false);
+            $this->assertContainsEquals($expectedChoice, $choices);
         }
     }
 
@@ -182,11 +171,7 @@ class PhoneNumberTypeTest extends TypeTestCase
     public function testCountryChoicePlaceholder($placeholder, $expectedPlaceholder)
     {
         IntlTestHelper::requireIntl($this);
-        if (method_exists('Symfony\\Component\\Form\\FormTypeInterface', 'getName')) {
-            $type = new PhoneNumberType();
-        } else {
-            $type = 'Misd\\PhoneNumberBundle\\Form\\Type\\PhoneNumberType';
-        }
+        $type = PhoneNumberType::class;
         $form = $this->factory->create($type, null, array('widget' => PhoneNumberType::WIDGET_COUNTRY_CHOICE, 'country_placeholder' => $placeholder));
 
         $view = $form->createView();
@@ -218,47 +203,35 @@ class PhoneNumberTypeTest extends TypeTestCase
 
     public function testCountryChoiceTranslations()
     {
-        IntlTestHelper::requireFullIntl($this);
+        IntlTestHelper::requireFullIntl($this, '70.1');
         Locale::setDefault('fr');
 
-        $form = $this->factory->create(new PhoneNumberType(), null, array('widget' => PhoneNumberType::WIDGET_COUNTRY_CHOICE));
+        $form = $this->factory->create(PhoneNumberType::class, null, array('widget' => PhoneNumberType::WIDGET_COUNTRY_CHOICE));
 
         $view = $form->createView();
         $choices = $view['country']->vars['choices'];
 
-        $this->assertContains($this->createChoiceView('Royaume-Uni (+44)', 'GB'), $choices, '', false, false);
+        $this->assertContainsEquals($this->createChoiceView('Royaume-Uni (+44)', 'GB'), $choices);
         $this->assertFalse($view['country']->vars['choice_translation_domain']);
     }
 
-    /**
-     * @expectedException \Symfony\Component\OptionsResolver\Exception\InvalidOptionsException
-     */
     public function testInvalidWidget()
     {
-        if (method_exists('Symfony\\Component\\Form\\FormTypeInterface', 'getName')) {
-            $type = new PhoneNumberType();
-        } else {
-            $type = 'Misd\\PhoneNumberBundle\\Form\\Type\\PhoneNumberType';
-        }
+        $this->expectException(\Symfony\Component\OptionsResolver\Exception\InvalidOptionsException::class);
+
+        $type = PhoneNumberType::class;
         $this->factory->create($type, null, array('widget' => 'foo'));
     }
 
-    public function testGetNameAndBlockPrefixAreTel()
+    public function testGetBlockPrefix()
     {
         $type = new PhoneNumberType();
 
         $this->assertSame('phone_number', $type->getBlockPrefix());
-        $this->assertSame($type->getBlockPrefix(), $type->getName());
     }
 
     private function createChoiceView($label, $code)
     {
-        if (class_exists('Symfony\Component\Form\ChoiceList\View\ChoiceView')) {
-            $class = 'Symfony\Component\Form\ChoiceList\View\ChoiceView';
-        } else {
-            $class = 'Symfony\Component\Form\Extension\Core\View\ChoiceView';
-        }
-
-        return new $class($code, $code, $label);
+        return new ChoiceView($code, $code, $label);
     }
 }

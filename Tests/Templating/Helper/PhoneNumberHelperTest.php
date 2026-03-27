@@ -14,7 +14,7 @@ namespace Misd\PhoneNumberBundle\Tests\Templating\Helper;
 use libphonenumber\PhoneNumberFormat;
 use Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberFormatHelper;
 use Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberHelper;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Phone number templating helper test.
@@ -28,29 +28,7 @@ class PhoneNumberHelperTest extends TestCase
 
         $helper = new PhoneNumberHelper($phoneNumberUtil);
 
-        $this->assertInstanceOf('Symfony\Component\Templating\Helper\HelperInterface', $helper);
-    }
-
-    public function testCharset()
-    {
-        $phoneNumberUtil = $this->getMockBuilder('libphonenumber\PhoneNumberUtil')
-            ->disableOriginalConstructor()->getMock();
-
-        $helper = new PhoneNumberHelper($phoneNumberUtil);
-
-        $helper->setCharset('test');
-
-        $this->assertSame('test', $helper->getCharset());
-    }
-
-    public function testName()
-    {
-        $phoneNumberUtil = $this->getMockBuilder('libphonenumber\PhoneNumberUtil')
-            ->disableOriginalConstructor()->getMock();
-
-        $helper = new PhoneNumberHelper($phoneNumberUtil);
-
-        $this->assertTrue(is_string($helper->getName()));
+        $this->assertInstanceOf('Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberHelper', $helper);
     }
 
     /**
@@ -58,7 +36,7 @@ class PhoneNumberHelperTest extends TestCase
      */
     public function testProcess($format, $expectedFormat)
     {
-        $phoneNumber = $this->getMock('libphonenumber\PhoneNumber');
+        $phoneNumber = $this->createMock('libphonenumber\PhoneNumber');
 
         $phoneNumberUtil = $this->getMockBuilder('libphonenumber\PhoneNumberUtil')
             ->disableOriginalConstructor()->getMock();
@@ -81,12 +59,11 @@ class PhoneNumberHelperTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \Misd\PhoneNumberBundle\Exception\InvalidArgumentException
-     */
     public function testProcessInvalidArgumentException()
     {
-        $phoneNumber = $this->getMock('libphonenumber\PhoneNumber');
+        $this->expectException(\Misd\PhoneNumberBundle\Exception\InvalidArgumentException::class);
+
+        $phoneNumber = $this->createMock('libphonenumber\PhoneNumber');
 
         $phoneNumberUtil = $this->getMockBuilder('libphonenumber\PhoneNumberUtil')
             ->disableOriginalConstructor()->getMock();

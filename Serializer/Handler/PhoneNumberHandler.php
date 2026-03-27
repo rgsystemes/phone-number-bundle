@@ -11,8 +11,11 @@
 
 namespace Misd\PhoneNumberBundle\Serializer\Handler;
 
+use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\VisitorInterface;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 use JMS\Serializer\XmlDeserializationVisitor;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
@@ -44,30 +47,30 @@ class PhoneNumberHandler
     /**
      * Serialize a phone number.
      *
-     * @param VisitorInterface $visitor     Serialization visitor.
-     * @param PhoneNumber      $phoneNumber Phone number.
-     * @param array            $type        Type.
-     * @param mixed            $context     Context.
+     * @param SerializationVisitorInterface $visitor     Serialization visitor.
+     * @param PhoneNumber                   $phoneNumber Phone number.
+     * @param array                         $type        Type.
+     * @param SerializationContext          $context     Context.
      *
      * @return mixed Serialized phone number.
      */
-    public function serializePhoneNumber(VisitorInterface $visitor, PhoneNumber $phoneNumber, array $type, $context)
+    public function serializePhoneNumber(SerializationVisitorInterface $visitor, PhoneNumber $phoneNumber, array $type, SerializationContext $context)
     {
         $formatted = $this->phoneNumberUtil->format($phoneNumber, PhoneNumberFormat::E164);
 
-        return $visitor->visitString($formatted, $type, $context);
+        return $visitor->visitString($formatted, $type);
     }
 
     /**
      * Deserialize a phone number from JSON.
      *
-     * @param JsonDeserializationVisitor $visitor Deserialization visitor.
-     * @param string|null                $data    Data.
-     * @param array                      $type    Type.
+     * @param DeserializationVisitorInterface $visitor Deserialization visitor.
+     * @param string|null                     $data    Data.
+     * @param array                           $type    Type.
      *
      * @return PhoneNumber|null Phone number.
      */
-    public function deserializePhoneNumberFromJson(JsonDeserializationVisitor $visitor, $data, array $type)
+    public function deserializePhoneNumberFromJson(DeserializationVisitorInterface $visitor, $data, array $type)
     {
         if (null === $data) {
             return null;
@@ -79,13 +82,13 @@ class PhoneNumberHandler
     /**
      * Deserialize a phone number from XML.
      *
-     * @param XmlDeserializationVisitor $visitor Deserialization visitor.
-     * @param SimpleXMLElement          $data    Data.
-     * @param array                     $type    Type.
+     * @param DeserializationVisitorInterface $visitor Deserialization visitor.
+     * @param SimpleXMLElement                $data    Data.
+     * @param array                           $type    Type.
      *
      * @return PhoneNumber|null Phone number.
      */
-    public function deserializePhoneNumberFromXml(XmlDeserializationVisitor $visitor, $data, array $type)
+    public function deserializePhoneNumberFromXml(DeserializationVisitorInterface $visitor, $data, array $type)
     {
         $attributes = $data->attributes();
         if (

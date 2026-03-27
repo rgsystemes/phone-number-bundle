@@ -12,7 +12,7 @@
 namespace Misd\PhoneNumberBundle\Tests\Validator\Constraints;
 
 use Misd\PhoneNumberBundle\Validator\Constraints\PhoneNumber;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Phone number constraint test.
@@ -23,9 +23,9 @@ class PhoneNumberTest extends TestCase
     {
         $phoneNumber = new PhoneNumber();
 
-        $this->assertObjectHasAttribute('message', $phoneNumber);
-        $this->assertObjectHasAttribute('type', $phoneNumber);
-        $this->assertObjectHasAttribute('defaultRegion', $phoneNumber);
+        $this->assertNull($phoneNumber->message);
+        $this->assertSame(PhoneNumber::ANY, $phoneNumber->type);
+        $this->assertSame('ZZ', $phoneNumber->defaultRegion);
     }
 
     /**
