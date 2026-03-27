@@ -12,10 +12,8 @@
 namespace Misd\PhoneNumberBundle\Tests\DependencyInjection;
 
 use Misd\PhoneNumberBundle\DependencyInjection\MisdPhoneNumberExtension;
-use PHPUnit_Framework_TestCase as TestCase;
-use Symfony\Component\Config\Resource\FileResource;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 
 /**
  * Bundle extension test.
@@ -23,7 +21,7 @@ use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 class MisdPhoneNumberExtensionTest extends TestCase
 {
     /**
-     * @var TaggedContainerInterface
+     * @var ContainerBuilder
      */
     protected $container;
 
@@ -62,22 +60,6 @@ class MisdPhoneNumberExtensionTest extends TestCase
               'libphonenumber\PhoneNumberToTimeZonesMapper'
             );
         }
-        $this->assertHasService(
-          'misd_phone_number.templating.helper',
-          'Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberHelper'
-        );
-        $this->assertServiceHasTag(
-          'misd_phone_number.templating.helper',
-          'templating.helper',
-          array('alias' => 'phone_number_helper')
-        );
-
-        // Assert deprecated 'phone_number_format' alias
-        $this->assertServiceHasTag(
-            'misd_phone_number.templating.helper',
-            'templating.helper',
-            array('alias' => 'phone_number_format')
-        );
 
         $this->assertHasService(
           'misd_phone_number.form.type',

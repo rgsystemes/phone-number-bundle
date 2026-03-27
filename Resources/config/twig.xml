@@ -4,13 +4,13 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <!-- .class parameters are deprecated and will be removed in 2.0 -->
-        <parameter key="misd_phone_number.twig.extension.class">Misd\PhoneNumberBundle\Twig\Extension\PhoneNumberHelperExtension</parameter>
-        <parameter key="misd_phone_number.twig.extension.format.class">%misd_phone_number.twig.extension.class%</parameter>
-    </parameters>
-
     <services>
+        <service id="misd_phone_number.templating.helper"
+                 class="Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberHelper">
+            <argument type="service" id="libphonenumber.phone_number_util"/>
+        </service>
+        <service id="Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberHelper" alias="misd_phone_number.templating.helper"/>
+
         <service id="misd_phone_number.twig.extension.format" class="Misd\PhoneNumberBundle\Twig\Extension\PhoneNumberHelperExtension"
                  public="false">
             <tag name="twig.extension"/>

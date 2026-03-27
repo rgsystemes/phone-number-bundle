@@ -16,13 +16,14 @@ use libphonenumber\PhoneNumberUtil;
 use Misd\PhoneNumberBundle\Form\DataTransformer\PhoneNumberToArrayTransformer;
 use Misd\PhoneNumberBundle\Form\DataTransformer\PhoneNumberToStringTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\Intl\Intl;
+use Symfony\Component\Intl\Countries;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Phone number form type.
@@ -60,7 +61,7 @@ class PhoneNumberType extends AbstractType
 
             $countryChoices = array();
 
-            foreach (Intl::getRegionBundle()->getCountryNames() as $region => $name) {
+            foreach (Countries::getNames() as $region => $name) {
                 if (false === isset($countries[$region])) {
                     continue;
                 }
@@ -77,21 +78,7 @@ class PhoneNumberType extends AbstractType
                 'translation_domain' => $options['translation_domain'],
             );
 
-            if (method_exists('Symfony\\Component\\Form\\AbstractType', 'getBlockPrefix')) {
-                $choiceType = 'Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType';
-                $textType = 'Symfony\\Component\\Form\\Extension\\Core\\Type\\TextType';
-                $countryOptions['choice_translation_domain'] = false;
-
-                // To be removed when dependency on Symfony Form is bumped to 3.1.
-                if (!in_array('Symfony\\Component\\Form\\DataTransformerInterface', class_implements('Symfony\\Component\\Form\\Extension\\Core\\Type\\TextType'))) {
-                    $countryOptions['choices_as_values'] = true;
-                }
-            } else {
-                // To be removed when dependency on Symfony Form is bumped to 2.7.
-                $choiceType = 'choice';
-                $textType = 'text';
-                $countryChoices = array_flip($countryChoices);
-            }
+            $countryOptions['choice_translation_domain'] = false;
 
             $countryOptions['required'] = true;
             $countryOptions['choices'] = $countryChoices;
@@ -102,8 +89,8 @@ class PhoneNumberType extends AbstractType
             }
 
             $builder
-                ->add('country', $choiceType, $countryOptions)
-                ->add('number', $textType, $numberOptions)
+                ->add('country', ChoiceType::class, $countryOptions)
+                ->add('number', TextType::class, $numberOptions)
                 ->addViewTransformer(new PhoneNumberToArrayTransformer($transformerChoices));
         } else {
             $builder->addViewTransformer(
@@ -119,17 +106,6 @@ class PhoneNumberType extends AbstractType
     {
         $view->vars['type'] = 'tel';
         $view->vars['widget'] = $options['widget'];
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @deprecated To be removed when the Symfony Form component compatibility
-     *             is bumped to at least 2.7.
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $this->configureOptions($resolver);
     }
 
     /**
@@ -154,33 +130,13 @@ class PhoneNumberType extends AbstractType
             )
         );
 
-        if (method_exists($resolver, 'setDefault')) {
-            $resolver->setAllowedValues(
-                'widget',
-                array(
-                    self::WIDGET_SINGLE_TEXT,
-                    self::WIDGET_COUNTRY_CHOICE,
-                )
-            );
-        } else {
-            // To be removed when dependency on Symfony OptionsResolver is bumped to 2.6.
-            $resolver->setAllowedValues(
-                array(
-                    'widget' => array(
-                        self::WIDGET_SINGLE_TEXT,
-                        self::WIDGET_COUNTRY_CHOICE,
-                    ),
-                )
-            );
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->getBlockPrefix();
+        $resolver->setAllowedValues(
+            'widget',
+            array(
+                self::WIDGET_SINGLE_TEXT,
+                self::WIDGET_COUNTRY_CHOICE,
+            )
+        );
     }
 
     /**

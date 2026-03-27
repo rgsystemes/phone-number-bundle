@@ -30,11 +30,8 @@ class MisdPhoneNumberExtension extends Extension
     {
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
-        if (interface_exists('Symfony\Component\Templating\Helper\HelperInterface')) {
-            $loader->load('templating.xml');
-            if (class_exists('Symfony\Bundle\TwigBundle\TwigBundle')) {
-                $loader->load('twig.xml');
-            }
+        if (class_exists('Symfony\Bundle\TwigBundle\TwigBundle')) {
+            $loader->load('twig.xml');
         }
         if (interface_exists('Symfony\Component\Form\FormTypeInterface')) {
             $loader->load('form.xml');
@@ -54,22 +51,12 @@ class MisdPhoneNumberExtension extends Extension
     }
 
     /**
-     * Set Factory of FactoryClass & FactoryMethod based on Symfony version.
-     *
-     * to be removed when dependency on Symfony DependencyInjection is bumped to 2.6 and
-     * services inlined in services.xml
+     * Set Factory based on Symfony version.
      *
      * @param $def
      */
     private function setFactory(Definition $def)
     {
-        if (method_exists($def, 'setFactory')) {
-            // to be inlined in services.xml when dependency on Symfony DependencyInjection is bumped to 2.6
-            $def->setFactory(array($def->getClass(), 'getInstance'));
-        } else {
-            // to be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-            $def->setFactoryClass($def->getClass());
-            $def->setFactoryMethod('getInstance');
-        }
+        $def->setFactory(array($def->getClass(), 'getInstance'));
     }
 }

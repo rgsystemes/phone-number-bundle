@@ -13,7 +13,7 @@ namespace Misd\PhoneNumberBundle\Tests\Serializer\Handler;
 
 use libphonenumber\PhoneNumberUtil;
 use Misd\PhoneNumberBundle\Serializer\Handler\PhoneNumberHandler;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 
 /**
@@ -30,9 +30,9 @@ class PhoneNumberHandlerTest extends TestCase
 
         $visitor = $this->getMockBuilder('JMS\Serializer\VisitorInterface')->getMock();
 
-        $test = $this->getMock('libphoneNumber\PhoneNumber');
+        $test = $this->createMock('libphoneNumber\PhoneNumber');
         $type = array();
-        $context = $this->getMock('JMS\Serializer\Context');
+        $context = $this->createMock('JMS\Serializer\Context');
 
         $phoneNumberUtil->expects($this->once())->method('format')->with($test)->will($this->returnValue('foo'));
         $visitor->expects($this->once())->method('visitString')->with('foo', $type, $context)
