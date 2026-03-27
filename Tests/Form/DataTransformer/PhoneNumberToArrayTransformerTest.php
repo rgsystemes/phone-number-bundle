@@ -57,7 +57,7 @@ class PhoneNumberToArrayTransformerTest extends TestCase
                 $phoneNumber = $actual['number'];
             }
         } else {
-            $phoneNumber = $actual['number'];
+            $phoneNumber = $actual;
         }
 
         try {
